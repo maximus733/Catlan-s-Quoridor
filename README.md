@@ -16,7 +16,7 @@ A browser-based Quoridor game with an AI opponent, built as a first-year multidi
 - One-move greedy AI scored on distance difference plus a path-count bonus
 
 ## Run
-Open `index.html` in any browser. No install needed.
+https://maximus733.github.io/Catlan-s-Quoridor/
 
 ## Host on GitHub Pages
 Repo Settings > Pages > Deploy from branch `main` / root.
