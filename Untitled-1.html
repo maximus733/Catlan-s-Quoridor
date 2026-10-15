@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Quoridor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f4efe6;--fg:#2b2118;--cell:#e2c99a;--wall:#7a3b1d;--p0:#2a6f97;--p1:#c8553d;--card:#fff8ea;--hint:#3a9d5d}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1814;--fg:#f1e7d6;--cell:#8a7048;--wall:#e0a15c;--card:#2a241d}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,Segoe UI,sans-serif;display:flex;flex-direction:column;align-items:center;padding:12px}
+h1{margin:4px 0;font-size:1.6rem;letter-spacing:.05em}
+.bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:6px 0}
+button,select{font:inherit;padding:6px 12px;border-radius:8px;border:1px solid var(--wall);background:var(--card);color:var(--fg);cursor:pointer}
+#status{font-weight:600;margin:6px;min-height:1.4em;text-align:center}
+.info{display:flex;gap:16px;margin:4px}
+.chip{padding:4px 12px;border-radius:20px;background:var(--card);border:2px solid transparent}
+.chip.on{border-color:var(--fg)}
+#wrap{width:100%;display:flex;justify-content:center;overflow:hidden}
+#board{position:relative;width:528px;height:528px;transform-origin:top left;flex:none}
+.cell{position:absolute;width:48px;height:48px;background:var(--cell);border-radius:6px}
+.hint{position:absolute;width:48px;height:48px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.hint::after{content:"";width:16px;height:16px;border-radius:50%;background:var(--hint);opacity:.85}
+.pawn{position:absolute;width:36px;height:36px;margin:6px;border-radius:50%;transition:all .25s;box-shadow:0 2px 4px #0006;pointer-events:none}
+.slot{position:absolute;cursor:pointer;border-radius:4px}
+.slot:hover{background:var(--wall);opacity:.45}
+.wall{position:absolute;background:var(--wall);border-radius:4px;pointer-events:none}
+.panel{background:var(--card);border-radius:10px;padding:8px 14px;margin:6px 0;font-size:.85rem;max-width:520px;line-height:1.5}.panel b{font-variant-numeric:tabular-nums}
+.sp{position:absolute;border-radius:6px;pointer-events:none}
+#msg{font-size:.85rem;opacity:.8;max-width:520px;text-align:center;margin-top:6px}
+</style></head><body>
+<h1>QUORIDOR</h1>
+<div class="bar">
+<select id="mode"><option value="ai">vs AI (hard)</option><option value="easy">vs AI (easy)</option><option value="two">2 players</option></select>
+<button id="new">New game</button>
+<label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="sp"> Show shortest paths</label>
+</div>
+<div class="info"><div class="chip" id="c0"></div><div class="chip" id="c1"></div></div>
+<div id="status"></div>
+<div class="panel" id="paths"></div>
+<div id="wrap"><div id="board"></div></div>
+<div id="msg">Move your pawn to the opposite side. Click a green dot to move, or click a gap between squares to place a wall (blocks 2 squares). You cannot fully block a path.</div>
+<script>
+const N=9,P=60;let walls,pawns,left,turn,over,mode;
+const key=(t,r,c)=>t+r+","+c;
+const D=[[-1,0],[1,0],[0,-1],[0,1]];
+const inb=(r,c)=>r>=0&&r<N&&c>=0&&c<N;
+function blocked(r,c,d){const[dr,dc]=d;if(!inb(r+dr,c+dc))return true;
+ if(dr==1)return walls.has(key('h',r,c))||walls.has(key('h',r,c-1));
+ if(dr==-1)return walls.has(key('h',r-1,c))||walls.has(key('h',r-1,c-1));
+ if(dc==1)return walls.has(key('v',r,c))||walls.has(key('v',r-1,c));
+ return walls.has(key('v',r,c-1))||walls.has(key('v',r-1,c-1));}
+function goal(p){return p==0?0:N-1}
+function dist(p){const s=pawns[p],g=goal(p),seen=new Set([s.r*N+s.c]);let q=[[s.r,s.c]],d=0;
+ while(q.length){const nq=[];for(const[r,c]of q){if(r==g)return d;
+  for(const e of D)if(!blocked(r,c,e)){const a=r+e[0],b=c+e[1],k=a*N+b;if(!seen.has(k)){seen.add(k);nq.push([a,b]);}}}
+  q=nq;d++;}return -1;}
+function moves(p){const me=pawns[p],op=pawns[1-p],out=[];
+ for(const d of D){if(blocked(me.r,me.c,d))continue;const r=me.r+d[0],c=me.c+d[1];
+  if(r==op.r&&c==op.c){if(!blocked(r,c,d))out.push({r:r+d[0],c:c+d[1]});
+   else for(const e of D){if(e[0]*d[0]+e[1]*d[1]!=0)continue;if(!blocked(r,c,e))out.push({r:r+e[0],c:c+e[1]});}}
+  else out.push({r,c});}
+ return out;}
+function wallOK(t,r,c){if(r<0||c<0||r>7||c>7)return false;
+ const o=t=='h'?'v':'h';
+ if(walls.has(key(t,r,c))||walls.has(key(o,r,c)))return false;
+ if(t=='h'&&(walls.has(key('h',r,c-1))||walls.has(key('h',r,c+1))))return false;
+ if(t=='v'&&(walls.has(key('v',r-1,c))||walls.has(key('v',r+1,c))))return false;
+ walls.add(key(t,r,c));const ok=dist(0)>=0&&dist(1)>=0;walls.delete(key(t,r,c));return ok;}
+function paths(p){const s=pawns[p],g=goal(p);let seen=new Map([[s.r*N+s.c,1]]),q=[[s.r,s.c]];
+ while(q.length){let tot=0,hit=false;for(const[r,c]of q)if(r==g){hit=true;tot+=seen.get(r*N+c);}
+  if(hit)return tot;const lvl=new Map();
+  for(const[r,c]of q){const w=seen.get(r*N+c);for(const e of D)if(!blocked(r,c,e)){const k=(r+e[0])*N+c+e[1];if(!seen.has(k))lvl.set(k,(lvl.get(k)||0)+w);}}
+  q=[];for(const[k,w]of lvl){seen.set(k,w);q.push([k/N|0,k%N]);}}
+ return 0;}
+function bfsAll(src){const d=new Array(N*N).fill(-1);let q=[];for(const[r,c]of src){d[r*N+c]=0;q.push([r,c]);}
+ while(q.length){const nq=[];for(const[r,c]of q)for(const e of D)if(!blocked(r,c,e)){const a=r+e[0],b=c+e[1];if(d[a*N+b]<0){d[a*N+b]=d[r*N+c]+1;nq.push([a,b]);}}q=nq;}return d;}
+function spCells(p){const s=pawns[p],g=goal(p),ds=bfsAll([[s.r,s.c]]),dg=bfsAll([...Array(N).keys()].map(c=>[g,c])),T=dist(p),out=[];
+ if(T<0)return out;for(let i=0;i<N*N;i++)if(ds[i]>=0&&dg[i]>=0&&ds[i]+dg[i]==T)out.push([i/N|0,i%N]);return out;}
+function cat(n){let b=1;for(let i=1;i<=n;i++)b=b*(n+i)/i;return Math.round(b/(n+1));}
+function binom(n,k){let b=1;for(let i=1;i<=k;i++)b=b*(n-k+i)/i;return Math.round(b);}
+function init(){walls=new Set();pawns=[{r:8,c:4},{r:0,c:4}];left=[10,10];turn=0;over=false;mode=document.getElementById('mode').value;draw();}
+function name(p){return mode=='two'?(p?'Player 2':'Player 1'):(p?'AI':'You')}
+function end(){const w=[0,1].find(p=>pawns[p].r==goal(p));if(w!==undefined){over=true;return w;}return null}
+function after(){const w=end();draw();if(w!==null)return;turn=1-turn;draw();if(mode!='two'&&turn==1)setTimeout(ai,450);}
+function doMove(p,r,c){pawns[p]={r,c};after();}
+function doWall(p,t,r,c){walls.add(key(t,r,c));left[p]--;after();}
+function ai(){if(over)return;const me=1,op=0;let best=-1e9,bm=[];
+ const score=()=>{const a=dist(me),b=dist(op);return b-a*1.2+0.1*(Math.log(paths(me)||1)-Math.log(paths(op)||1));};
+ for(const m of moves(me)){const o=pawns[me];pawns[me]=m;let s=score()+(m.r==goal(me)?100:0);pawns[me]=o;s+=Math.random()*.3;if(s>best){best=s;bm=[{k:'m',m}]}else if(Math.abs(s-best)<.01)bm.push({k:'m',m})}
+ if(left[me]>0&&mode=='ai')for(const t of['h','v'])for(let r=0;r<8;r++)for(let c=0;c<8;c++){
+  if(!wallOK(t,r,c))continue;walls.add(key(t,r,c));let s=score()-.6+Math.random()*.3;walls.delete(key(t,r,c));
+  if(s>best){best=s;bm=[{k:'w',t,r,c}]}}
+ if(mode=='easy'&&Math.random()<.3){const ms=moves(me);bm=[{k:'m',m:ms[Math.random()*ms.length|0]}];}
+ const x=bm[Math.random()*bm.length|0];
+ if(x.k=='m')doMove(me,x.m.r,x.m.c);else doWall(me,x.t,x.r,x.c);}
+function draw(){const b=document.getElementById('board');let h='';
+ for(let r=0;r<N;r++)for(let c=0;c<N;c++)h+=`<div class="cell" style="left:${c*P}px;top:${r*P}px"></div>`;
+ if(document.getElementById('sp').checked)[0,1].forEach(p=>{const i=p?14:4,w=48-2*i;for(const[r,c]of spCells(p))h+=`<div class="sp" style="left:${c*P+i}px;top:${r*P+i}px;width:${w}px;height:${w}px;background:var(--p${p});opacity:${p?.75:.45}"></div>`;});
+ for(const k of walls){const t=k[0],[r,c]=k.slice(1).split(',').map(Number);
+  h+=t=='h'?`<div class="wall" style="left:${c*P}px;top:${r*P+48}px;width:108px;height:12px"></div>`:`<div class="wall" style="left:${c*P+48}px;top:${r*P}px;width:12px;height:108px"></div>`;}
+ const human=!over&&(mode=='two'||turn==0);
+ if(human){for(const m of moves(turn))h+=`<div class="hint" data-a="m" data-r="${m.r}" data-c="${m.c}" style="left:${m.c*P}px;top:${m.r*P}px"></div>`;
+  if(left[turn]>0)for(let r=0;r<8;r++)for(let c=0;c<8;c++)for(const t of['h','v'])if(wallOK(t,r,c)){
+   const st=t=='h'?`left:${c*P}px;top:${r*P+48}px;width:108px;height:12px`:`left:${c*P+48}px;top:${r*P}px;width:12px;height:108px`;
+   h+=`<div class="slot" data-a="w" data-t="${t}" data-r="${r}" data-c="${c}" style="${st}"></div>`;}}
+ pawns.forEach((p,i)=>h+=`<div class="pawn" style="left:${p.c*P}px;top:${p.r*P}px;background:var(--p${i})"></div>`);
+ b.innerHTML=h;
+ for(let i=0;i<2;i++){const c=document.getElementById('c'+i);c.textContent=`${name(i)} • walls: ${left[i]}`;c.style.color=`var(--p${i})`;c.classList.toggle('on',!over&&turn==i);}
+ document.getElementById('paths').innerHTML=[0,1].map(i=>`<b style="color:var(--p${i})">${name(i)}</b>: shortest length <b>${dist(i)}</b>, number of shortest paths <b>${paths(i).toLocaleString()}</b>`).join('<br>')+`<br><span style="opacity:.8">Catalan baseline (8×8 steps): all monotone paths C(16,8) = <b>${binom(16,8).toLocaleString()}</b>; paths not crossing the diagonal C<sub>8</sub> = <b>${cat(8).toLocaleString()}</b></span><br><span style="opacity:.8">C<sub>1..8</sub> = ${[1,2,3,4,5,6,7,8].map(cat).join(', ')}</span>`;
+ const s=document.getElementById('status');
+ s.textContent=over?`🏆 ${name(pawns[0].r==0?0:1)} wins!`:(mode!='two'&&turn==1?'AI is thinking…':`${name(turn)}: your turn`);}
+document.getElementById('board').onclick=e=>{const d=e.target.dataset;if(!d.a||over)return;
+ if(d.a=='m')doMove(turn,+d.r,+d.c);else doWall(turn,d.t,+d.r,+d.c);};
+document.getElementById('new').onclick=init;document.getElementById('sp').onchange=draw;document.getElementById('mode').onchange=init;
+function fit(){const w=document.getElementById('wrap'),s=Math.min(1,(innerWidth-24)/528);const b=document.getElementById('board');b.style.transform=`scale(${s})`;w.style.height=528*s+'px';b.style.marginRight=-(528*(1-s))+'px';w.style.justifyContent=s<1?'flex-start':'center';}
+addEventListener('resize',fit);init();fit();
+</script></body></html>
