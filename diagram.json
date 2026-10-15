@@ -1,0 +1,506 @@
+{
+ "version": 1,
+ "author": "Quoridor MDP",
+ "editor": "wokwi",
+ "parts": [
+  {
+   "type": "wokwi-esp32-devkit-v1",
+   "id": "esp",
+   "top": 0,
+   "left": 0,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-pushbutton",
+   "id": "cell1",
+   "top": 0,
+   "left": 260,
+   "attrs": {
+    "color": "green"
+   }
+  },
+  {
+   "type": "wokwi-pushbutton",
+   "id": "cell2",
+   "top": 0,
+   "left": 340,
+   "attrs": {
+    "color": "green"
+   }
+  },
+  {
+   "type": "wokwi-pushbutton",
+   "id": "cell3",
+   "top": 0,
+   "left": 420,
+   "attrs": {
+    "color": "green"
+   }
+  },
+  {
+   "type": "wokwi-pushbutton",
+   "id": "cell4",
+   "top": 80,
+   "left": 260,
+   "attrs": {
+    "color": "green"
+   }
+  },
+  {
+   "type": "wokwi-pushbutton",
+   "id": "cell5",
+   "top": 80,
+   "left": 340,
+   "attrs": {
+    "color": "green"
+   }
+  },
+  {
+   "type": "wokwi-pushbutton",
+   "id": "cell6",
+   "top": 80,
+   "left": 420,
+   "attrs": {
+    "color": "green"
+   }
+  },
+  {
+   "type": "wokwi-pushbutton",
+   "id": "cell7",
+   "top": 160,
+   "left": 260,
+   "attrs": {
+    "color": "green"
+   }
+  },
+  {
+   "type": "wokwi-pushbutton",
+   "id": "cell8",
+   "top": 160,
+   "left": 340,
+   "attrs": {
+    "color": "green"
+   }
+  },
+  {
+   "type": "wokwi-pushbutton",
+   "id": "cell9",
+   "top": 160,
+   "left": 420,
+   "attrs": {
+    "color": "green"
+   }
+  },
+  {
+   "type": "wokwi-pushbutton",
+   "id": "confirm",
+   "top": 260,
+   "left": 260,
+   "attrs": {
+    "color": "yellow"
+   }
+  },
+  {
+   "type": "wokwi-buzzer",
+   "id": "bz",
+   "top": 260,
+   "left": 380,
+   "attrs": {
+    "volume": "0.1"
+   }
+  },
+  {
+   "type": "board-ssd1306",
+   "id": "oled",
+   "top": -120,
+   "left": 0,
+   "attrs": {
+    "i2cAddress": "0x3C"
+   }
+  },
+  {
+   "type": "wokwi-neopixel",
+   "id": "led1",
+   "top": -40,
+   "left": 520,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-neopixel",
+   "id": "led2",
+   "top": -40,
+   "left": 580,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-neopixel",
+   "id": "led3",
+   "top": -40,
+   "left": 640,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-neopixel",
+   "id": "led4",
+   "top": 20,
+   "left": 520,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-neopixel",
+   "id": "led5",
+   "top": 20,
+   "left": 580,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-neopixel",
+   "id": "led6",
+   "top": 20,
+   "left": 640,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-neopixel",
+   "id": "led7",
+   "top": 80,
+   "left": 520,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-neopixel",
+   "id": "led8",
+   "top": 80,
+   "left": 580,
+   "attrs": {}
+  },
+  {
+   "type": "wokwi-neopixel",
+   "id": "led9",
+   "top": 80,
+   "left": 640,
+   "attrs": {}
+  }
+ ],
+ "connections": [
+  [
+   "esp:D13",
+   "cell1:1.l",
+   "green",
+   []
+  ],
+  [
+   "cell1:2.l",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "esp:D12",
+   "cell2:1.l",
+   "green",
+   []
+  ],
+  [
+   "cell2:2.l",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "esp:D14",
+   "cell3:1.l",
+   "green",
+   []
+  ],
+  [
+   "cell3:2.l",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "esp:D27",
+   "cell4:1.l",
+   "green",
+   []
+  ],
+  [
+   "cell4:2.l",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "esp:D26",
+   "cell5:1.l",
+   "green",
+   []
+  ],
+  [
+   "cell5:2.l",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "esp:D25",
+   "cell6:1.l",
+   "green",
+   []
+  ],
+  [
+   "cell6:2.l",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "esp:D33",
+   "cell7:1.l",
+   "green",
+   []
+  ],
+  [
+   "cell7:2.l",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "esp:D32",
+   "cell8:1.l",
+   "green",
+   []
+  ],
+  [
+   "cell8:2.l",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "esp:RX2",
+   "cell9:1.l",
+   "green",
+   []
+  ],
+  [
+   "cell9:2.l",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "esp:D4",
+   "confirm:1.l",
+   "yellow",
+   []
+  ],
+  [
+   "confirm:2.l",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "esp:D18",
+   "bz:2",
+   "orange",
+   []
+  ],
+  [
+   "bz:1",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "esp:3V3",
+   "oled:VCC",
+   "red",
+   []
+  ],
+  [
+   "esp:GND.1",
+   "oled:GND",
+   "black",
+   []
+  ],
+  [
+   "esp:D21",
+   "oled:SDA",
+   "blue",
+   []
+  ],
+  [
+   "esp:D22",
+   "oled:SCL",
+   "purple",
+   []
+  ],
+  [
+   "led1:VDD",
+   "esp:VIN",
+   "red",
+   []
+  ],
+  [
+   "led1:VSS",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "esp:D19",
+   "led1:DIN",
+   "cyan",
+   []
+  ],
+  [
+   "led2:VDD",
+   "esp:VIN",
+   "red",
+   []
+  ],
+  [
+   "led2:VSS",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "led1:DOUT",
+   "led2:DIN",
+   "cyan",
+   []
+  ],
+  [
+   "led3:VDD",
+   "esp:VIN",
+   "red",
+   []
+  ],
+  [
+   "led3:VSS",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "led2:DOUT",
+   "led3:DIN",
+   "cyan",
+   []
+  ],
+  [
+   "led4:VDD",
+   "esp:VIN",
+   "red",
+   []
+  ],
+  [
+   "led4:VSS",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "led3:DOUT",
+   "led4:DIN",
+   "cyan",
+   []
+  ],
+  [
+   "led5:VDD",
+   "esp:VIN",
+   "red",
+   []
+  ],
+  [
+   "led5:VSS",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "led4:DOUT",
+   "led5:DIN",
+   "cyan",
+   []
+  ],
+  [
+   "led6:VDD",
+   "esp:VIN",
+   "red",
+   []
+  ],
+  [
+   "led6:VSS",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "led5:DOUT",
+   "led6:DIN",
+   "cyan",
+   []
+  ],
+  [
+   "led7:VDD",
+   "esp:VIN",
+   "red",
+   []
+  ],
+  [
+   "led7:VSS",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "led6:DOUT",
+   "led7:DIN",
+   "cyan",
+   []
+  ],
+  [
+   "led8:VDD",
+   "esp:VIN",
+   "red",
+   []
+  ],
+  [
+   "led8:VSS",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "led7:DOUT",
+   "led8:DIN",
+   "cyan",
+   []
+  ],
+  [
+   "led9:VDD",
+   "esp:VIN",
+   "red",
+   []
+  ],
+  [
+   "led9:VSS",
+   "esp:GND.1",
+   "black",
+   []
+  ],
+  [
+   "led8:DOUT",
+   "led9:DIN",
+   "cyan",
+   []
+  ]
+ ],
+ "dependencies": {}
+}
